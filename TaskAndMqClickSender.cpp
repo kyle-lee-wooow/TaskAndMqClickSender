@@ -110,6 +110,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MSG msg;
     l_config = std::make_unique<CFG>("./TaskAndMqClick.ini");  // 智能指针初始化
 
+
+    if (!l_config->fileExists()) { return 0; }
+    remoteCtrlisTaskRunning = true;
+    std::string mqaddr = l_config->getString("mqtt", "SERVER_ADDRESS");
+    std::string name = l_config->getString("mqtt", "MQ_NAME");
+    std::string MQ_PWD = l_config->getString("mqtt", "MQ_PWD");
+
+    RemoteCtrl::Conntection::getInstance().setMQTTParam(mqaddr, name, MQ_PWD);
+
+    // 在新线程中启动 loading()
+    std::thread([]() {
+
+        RemoteCtrl::Conntection::getInstance().loading(withRemoteCtrlHandler);
+        }).detach();  // 使用 detach 保证线程独立
+
+
+
+
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -233,21 +251,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             500, 320, 80, 30, hWnd, (HMENU)1002, hInst, NULL);
 
 
-        //输入框
-        inputs1 = CreateWindowW(L"EDIT", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL,
-            20, 20, 150, 30, hWnd, (HMENU)(1003), hInst, NULL);
-
         // 选中
-        TaskStartBtn = CreateWindowW(L"BUTTON", L"选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            100, 320, 80, 30, hWnd, (HMENU)1004, hInst, NULL);
+        CreateWindowW(L"BUTTON", L"选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            400, 280, 80, 30, hWnd, (HMENU)1004, hInst, NULL);
 
         // 取消选中
-        TaskStopBtn = CreateWindowW(L"BUTTON", L"取消选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            200, 320, 80, 30, hWnd, (HMENU)1005, hInst, NULL);
+        CreateWindowW(L"BUTTON", L"取消选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            500, 280, 80, 30, hWnd, (HMENU)1005, hInst, NULL);
+
+
+
+        //输入框
+        inputs1 = CreateWindowW(L"EDIT", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL,
+            10, 20, 150, 30, hWnd, (HMENU)(1003), hInst, NULL);
+
+
 
         // 喊话
-        TaskStopBtn = CreateWindowW(L"BUTTON", L"喊话", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+         CreateWindowW(L"BUTTON", L"喊话", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
             300, 320, 80, 30, hWnd, (HMENU)1006, hInst, NULL);
+
+
+        // 批量执行
+         CreateWindowW(L"BUTTON", L"组合按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+            10, 320, 80, 30, hWnd, (HMENU)1007, hInst, NULL);
 
 
 
@@ -258,7 +285,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_KEYDOWN:
     {
-        sendKeyToListBoxs(wParam);
+        //sendKeyToListBoxs(wParam);
+        std::string msg = "TYPE:1|KEY_ID:";
+        msg += std::to_string(wParam);
+        RemoteCtrl::Conntection::getInstance().publishMessage(msg);
     }
     break;
 
@@ -268,7 +298,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_LBUTTONDOWN:  // 处理鼠标左键点击事件
     {
-         
+        SetFocus(mainHWnd);
         break;
     }
 
@@ -314,20 +344,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             RemoteCtrl::Conntection::getInstance().publishMessage(msg);
             break;
 
+        case 1007: // 批量按键
+            GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+            msg = "TYPE:3|KEYS_ID:";
+            msg += TCHARToString(buffer);
+            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+            break;
+
+
+
         case ID_REMOTE_CTRL_RUN:{
-            if (!l_config->fileExists()) { break; }
-            remoteCtrlisTaskRunning = true;
-            std::string mqaddr = l_config->getString("mqtt", "SERVER_ADDRESS");
-            std::string name = l_config->getString("mqtt", "MQ_NAME");
-            std::string MQ_PWD = l_config->getString("mqtt", "MQ_PWD");
+            //if (!l_config->fileExists()) { break; }
+            //remoteCtrlisTaskRunning = true;
+            //std::string mqaddr = l_config->getString("mqtt", "SERVER_ADDRESS");
+            //std::string name = l_config->getString("mqtt", "MQ_NAME");
+            //std::string MQ_PWD = l_config->getString("mqtt", "MQ_PWD");
 
-            RemoteCtrl::Conntection::getInstance().setMQTTParam(mqaddr, name, MQ_PWD);
+            //RemoteCtrl::Conntection::getInstance().setMQTTParam(mqaddr, name, MQ_PWD);
 
-            // 在新线程中启动 loading()
-            std::thread([]() {
-               
-                RemoteCtrl::Conntection::getInstance().loading(withRemoteCtrlHandler);
-                }).detach();  // 使用 detach 保证线程独立
+            //// 在新线程中启动 loading()
+            //std::thread([]() {
+            //   
+            //    RemoteCtrl::Conntection::getInstance().loading(withRemoteCtrlHandler);
+            //    }).detach();  // 使用 detach 保证线程独立
             break;
         }
         case ID_REMOTE_CTRL_STOP:
@@ -534,7 +573,7 @@ void sendKeyToListBoxs(int key)
     // 执行按键发送
     if (key != '\0')
     {
-        int count = SendMessage(hListBox, LB_GETCOUNT, 0, 0);
+      /*  int count = SendMessage(hListBox, LB_GETCOUNT, 0, 0);
         for (int j = 0; j < count; j++)
         {
             WCHAR buffer[100];
@@ -550,7 +589,14 @@ void sendKeyToListBoxs(int key)
                     PostMessage(targetWindow, WM_KEYUP, (WPARAM)key, 0);
                 }
             }
-        }
+        }*/
+
+
+
+        
+        std::string msg = "TYPE:1|KEY:";
+        msg += std::to_string(key);
+        RemoteCtrl::Conntection::getInstance().publishMessage(msg);
     }
 }
 
