@@ -41,15 +41,27 @@ std::wstring GetEditText(HWND hDlg, int controlID) {
 }
 
 // 工具函数：将 TCHAR 转为 std::string
+//std::string TCHARToString(const TCHAR* buffer) {
+//    std::string msg;
+//#ifdef UNICODE
+//    // 如果是 Unicode，转换为 std::wstring 再转换为 std::string
+//    std::wstring wstr(buffer);
+//    msg.assign(wstr.begin(), wstr.end());
+//#else
+//    // 如果是 ANSI，直接赋值
+//    msg = buffer;
+//#endif
+//    return msg;
+//}
+
+// 工具函数：将 TCHAR 转为 std::string
 std::string TCHARToString(const TCHAR* buffer) {
-    std::string msg;
 #ifdef UNICODE
-    // 如果是 Unicode，转换为 std::wstring 再转换为 std::string
-    std::wstring wstr(buffer);
-    msg.assign(wstr.begin(), wstr.end());
-#else
-    // 如果是 ANSI，直接赋值
-    msg = buffer;
-#endif
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+    std::string msg(size_needed, 0);
+    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, &msg[0], size_needed, nullptr, nullptr);
     return msg;
+#else
+    return std::string(buffer);
+#endif
 }
