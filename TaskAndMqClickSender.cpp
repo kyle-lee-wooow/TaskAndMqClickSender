@@ -143,6 +143,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 
+
 // 启动任务A的函数
 void StartTaskA(HWND hWnd) {
     SetFocus(hWnd);
@@ -242,40 +243,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
     { 
 
-        // 创建启动按钮
-        TaskStartBtn = CreateWindowW(L"BUTTON", L"启动按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            400, 320, 80, 30, hWnd, (HMENU)1001, hInst, NULL);
+        //// 创建启动按钮
+        //TaskStartBtn = CreateWindowW(L"BUTTON", L"启动按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        //    400, 320, 80, 30, hWnd, (HMENU)1001, hInst, NULL);
 
-        // 创建停止按钮
-        TaskStopBtn = CreateWindowW(L"BUTTON", L"停止按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            500, 320, 80, 30, hWnd, (HMENU)1002, hInst, NULL);
+        //// 创建停止按钮
+        //TaskStopBtn = CreateWindowW(L"BUTTON", L"停止按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        //    500, 320, 80, 30, hWnd, (HMENU)1002, hInst, NULL);
 
 
-        // 选中
-        CreateWindowW(L"BUTTON", L"选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            400, 280, 80, 30, hWnd, (HMENU)1004, hInst, NULL);
+        //// 选中
+        //CreateWindowW(L"BUTTON", L"选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        //    400, 280, 80, 30, hWnd, (HMENU)1004, hInst, NULL);
 
-        // 取消选中
-        CreateWindowW(L"BUTTON", L"取消选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            500, 280, 80, 30, hWnd, (HMENU)1005, hInst, NULL);
+        //// 取消选中
+        //CreateWindowW(L"BUTTON", L"取消选中", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        //    500, 280, 80, 30, hWnd, (HMENU)1005, hInst, NULL);
 
 
 
         //输入框
         inputs1 = CreateWindowW(L"EDIT", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL,
-            10, 20, 150, 30, hWnd, (HMENU)(1003), hInst, NULL);
+            200, 10, 250, 30, hWnd, (HMENU)(1003), hInst, NULL);
 
 
 
-        // 喊话
-         CreateWindowW(L"BUTTON", L"喊话", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            300, 320, 80, 30, hWnd, (HMENU)1006, hInst, NULL);
+        //// 喊话
+        // CreateWindowW(L"BUTTON", L"喊话", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        //    300, 320, 80, 30, hWnd, (HMENU)1006, hInst, NULL);
 
 
-        // 批量执行
-         CreateWindowW(L"BUTTON", L"组合按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
-            10, 320, 80, 30, hWnd, (HMENU)1007, hInst, NULL);
+        //// 批量执行
+        // CreateWindowW(L"BUTTON", L"组合按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+        //    10, 320, 80, 30, hWnd, (HMENU)1007, hInst, NULL);
 
+        for (int i = 0; i < buttons.size(); ++i) {
+            int x = 50 + (i % 4) * 160;  // 每行4个按钮
+            int y = 50 + (i / 4) * 40;    // 每4个按钮换一行
+            HWND hButton = CreateWindowW(L"BUTTON", buttons[i].name.c_str(),
+                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
+                x, y, 150, 30,
+                hWnd, (HMENU)(1100 + i), ((LPCREATESTRUCT)lParam)->hInstance, NULL);
+            commandMap[1100 + i] = &buttons[i];
+        }
+         break;
 
 
     }
@@ -308,48 +319,64 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int wmId = LOWORD(wParam); 
         TCHAR buffer[256];
         std::string msg;
+        GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+
+        if (wmId >= 1100 && wmId <= 1100 + buttons.size()) {
+            if (commandMap.find(wmId) != commandMap.end()) {
+                std::wstring  m = commandMap[wmId]->command;
+                if (m.length() > 0) {
+                    if (commandMap[wmId]->addContent == 1 ) {
+                        m += buffer;
+                    }
+
+                    RemoteCtrl::Conntection::getInstance().publishMessage(WstringToString(m));
+                    break;
+                }
+              
+            }
+        }
 
         switch (wmId)
         {
-        case 1001: // 启动按钮点击
-            StartTaskA(hWnd);
-            msg = "TYPE:2|COMMAND:START_TASK|TASK_ID:0";
-            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
-            break;
+        //case 1001: // 启动按钮点击
+        //    StartTaskA(hWnd);
+        //    msg = "TYPE:2|COMMAND:START_TASK|TASK_ID:0";
+        //    RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+        //    break;
 
-        case 1002: // 停止按钮点击
-            StopTaskA(hWnd);
-            msg = "TYPE:2|COMMAND:STOP_TASK|TASK_ID:0";
-            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
-            break;
+        //case 1002: // 停止按钮点击
+        //    StopTaskA(hWnd);
+        //    msg = "TYPE:2|COMMAND:STOP_TASK|TASK_ID:0";
+        //    RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+        //    break;
 
-        case 1004: // 选中
-            GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
-            msg = "TYPE:2|COMMAND:CHECK_CHECKBOX|CHECKBOX_ID:";
-            msg += TCHARToString(buffer);
-            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
-            break;
+        //case 1004: // 选中
+        //    GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+        //    msg = "TYPE:2|COMMAND:CHECK_CHECKBOX|CHECKBOX_ID:";
+        //    msg += TCHARToString(buffer);
+        //    RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+        //    break;
 
-        case 1005: // 取消选择
-            GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
-            msg = "TYPE:2|COMMAND:UNCHECK_CHECKBOX|CHECKBOX_ID:";
-            msg += TCHARToString(buffer);
-            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
-            break;
+        //case 1005: // 取消选择
+        //    GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+        //    msg = "TYPE:2|COMMAND:UNCHECK_CHECKBOX|CHECKBOX_ID:";
+        //    msg += TCHARToString(buffer);
+        //    RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+        //    break;
 
-        case 1006: // 喊话
-            GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
-            msg = "TYPE:2|COMMAND:WOW_SAY|CONTENT:";
-            msg += TCHARToString(buffer);
-            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
-            break;
+        //case 1006: // 喊话
+        //    GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+        //    msg = "TYPE:2|COMMAND:WOW_SAY|CONTENT:";
+        //    msg += TCHARToString(buffer);
+        //    RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+        //    break;
 
-        case 1007: // 批量按键
-            GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
-            msg = "TYPE:3|KEYS_ID:";
-            msg += TCHARToString(buffer);
-            RemoteCtrl::Conntection::getInstance().publishMessage(msg);
-            break;
+        //case 1007: // 批量按键
+        //    GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+        //    msg = "TYPE:3|KEYS_ID:";
+        //    msg += TCHARToString(buffer);
+        //    RemoteCtrl::Conntection::getInstance().publishMessage(msg);
+        //    break;
 
 
 
