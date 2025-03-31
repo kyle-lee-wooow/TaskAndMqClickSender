@@ -10,29 +10,38 @@
 struct ButtonInfo {
     std::wstring name;
     std::wstring command;
-    int addContent;
+    int addContent;//0不需要  1增加  2替换{}
 };
 
 std::vector<ButtonInfo> buttons = {
-    {L"启动按键", L"TYPE:2|COMMAND:START_TASK|TASK_ID:0",0},
-    {L"停止按键", L"TYPE:2|COMMAND:STOP_TASK|TASK_ID:0",0},
+    {L"启动", L"TYPE:2|COMMAND:START_TASK|TASK_ID:0",0},
+    {L"停止", L"TYPE:2|COMMAND:STOP_TASK|TASK_ID:0",0},
     {L"协助Bdsm", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/协助 Bdsm",0},
     {L"跟随Bdsm", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/follow Bdsm",0},
-    {L"停止跟随", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/unfollow",0},
-    {L"离开小队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run LeaveParty()",0},
-    {L"向前移动", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run MoveForwardStart()",0},
-    {L"停止移动", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run MoveForwardStop()",0},
+    {L"停止移动", L"TYPE:1|KEY:87",0},
+    //{L"离开小队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run LeaveParty()",0},
+    {L"向前奔跑", L"TYPE:1|KEY:144",0}, 
     {L"清除目标", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run  ClearTarget()",0},
-    {L"接受组队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local f=CreateFrame(\"Frame\") f:RegisterEvent(\"PARTY_INVITE_REQUEST\") f:SetScript(\"OnEvent\",function() AcceptGroup(); StaticPopup_Hide(\"PARTY_INVITE\") end)",0},
+    {L"上马", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/use 驯鹿缰绳",0},
+    {L"下马", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/dismount",0},
+    {L"鞠躬", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/bow",0},
+    {L"鼓掌", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/applause",0},
+    {L"喝彩", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/applaud",0},
+    {L"确定交易", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run AcceptTrade()",0},
+    {L"炉石", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/use 炉石",0},
+    {L"对话", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/interact",0},
+    //{L"接受组队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local f=CreateFrame(\"Frame\") f:RegisterEvent(\"PARTY_INVITE_REQUEST\") f:SetScript(\"OnEvent\",function() AcceptGroup(); StaticPopup_Hide(\"PARTY_INVITE\") end)",0},
 
     {L"---------", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:1",0},
 
-    {L"选中任务+", L"TYPE:2|COMMAND:CHECK_CHECKBOX|CHECKBOX_ID:",1},
-    {L"取消任务+", L"TYPE:2|COMMAND:UNCHECK_CHECKBOX|CHECKBOX_ID:",1},
+    {L"选中按键+", L"TYPE:2|COMMAND:CHECK_CHECKBOX|CHECKBOX_ID:",1},
+    {L"取消按键+", L"TYPE:2|COMMAND:UNCHECK_CHECKBOX|CHECKBOX_ID:",1},
     {L"通用喊话+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:",1},
     {L"跟随目标+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/follow ",1},
     {L"指定目标+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/target ",1},
     {L"协助队友+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/协助 ",1},
+    {L"升为队长+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/pr ",1},
+    {L"交互选择+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/script SelectGossipOption({})",2},
 
     {L"组合按键+", L"TYPE:3|KEYS_ID:",1}
 };

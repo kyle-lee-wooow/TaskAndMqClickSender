@@ -328,6 +328,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     if (commandMap[wmId]->addContent == 1 ) {
                         m += buffer;
                     }
+                    else if (commandMap[wmId]->addContent == 2) {
+                        size_t pos = m.find(L"{}");
+                        if (pos != std::string::npos) {
+                            m.replace(pos, 2, buffer);  // 替换 "{}" 为 buffer
+                        }
+                    }
 
                     RemoteCtrl::Conntection::getInstance().publishMessage(WstringToString(m));
                     break;
@@ -538,6 +544,7 @@ std::vector<BYTE> ParseKeyCombo(const std::wstring& keyCombo)
         else if (_wcsicmp(key.c_str(), L"F10") == 0) keys.push_back(VK_F10);
         else if (_wcsicmp(key.c_str(), L"F11") == 0) keys.push_back(VK_F11);
         else if (_wcsicmp(key.c_str(), L"F12") == 0) keys.push_back(VK_F12);
+        else if (_wcsicmp(key.c_str(), L"NumLock") == 0) keys.push_back(VK_NUMLOCK);
         else if (key.length() == 1) keys.push_back(VkKeyScan(key[0])); // 普通字符
     }
 
