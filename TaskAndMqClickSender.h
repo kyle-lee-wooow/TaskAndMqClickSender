@@ -22,14 +22,24 @@ std::vector<ButtonInfo> buttons = {
     //{L"离开小队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run LeaveParty()",0},
     {L"向前奔跑", L"TYPE:1|KEY_ID:144",0}, 
     {L"清除目标", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run  ClearTarget()",0},
-    {L"上马", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/use 驯鹿缰绳",0},
-    {L"下马", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/dismount",0},
+    {L"上马下马", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run UseItemByName(\"驯鹿缰绳\")",0},
+   
     {L"鞠躬", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/bow",0},
     {L"鼓掌", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/applause",0},
     {L"喝彩", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/applaud",0},
     {L"确定交易", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run AcceptTrade()",0},
-    {L"炉石", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/use 炉石",0},
+    {L"炉石", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run UseItemByName(\"炉石\")",0},
+
     {L"对话", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/interact",0},
+    {L"buff-吃肉", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run UseItemByName(\"魔法甜面包\")",0},
+    {L"buff-喝水", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run UseItemByName(\"魔法晶水\")",0},
+    {L"buff-甲", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local c=UnitClass(\"player\") if c==\"牧师\" then CastSpellByName(\"心灵之火\") else if c==\"法师\" then CastSpellByName(\"魔甲术\") end end",0},
+    {L"buff-智耐", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local c=UnitClass(\"player\") if c==\"牧师\" then CastSpellByName(\"真言术：韧\") else if c==\"法师\" then CastSpellByName(\"奥术智慧\") end end",0},
+    {L"buff-盾", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local c=UnitClass(\"player\") if c==\"牧师\" then CastSpellByName(\"真言术：盾\") else if c==\"法师\" then CastSpellByName(\"法力护盾\") end end",0},
+    //{L"团队跟随", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run for i=1,GetNumRaidMembers() do if UnitIsUnit(\"player\", \"raid\"..i) then FollowUnit(\"raid\"..(i-1)) break end end",0},
+    //{L"小队跟随", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run for i=1,GetNumPartyMembers() do if UnitIsUnit(\"player\", \"party\"..i) then FollowUnit(\"party\"..(i-1)) break end end",0},
+    {L"左键点中间", L"TYPE:4|COMMAND:LIFT_CLICK|POSITION:CENTER",0},
+    {L"右键点中间", L"TYPE:4|COMMAND:RIGHT_CLICK|POSITION:CENTER",0},
     //{L"接受组队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local f=CreateFrame(\"Frame\") f:RegisterEvent(\"PARTY_INVITE_REQUEST\") f:SetScript(\"OnEvent\",function() AcceptGroup(); StaticPopup_Hide(\"PARTY_INVITE\") end)",0},
 
     {L"---------", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:1",0},
@@ -41,6 +51,7 @@ std::vector<ButtonInfo> buttons = {
     {L"指定目标+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/target ",1},
     {L"协助队友+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/协助 ",1},
     {L"升为队长+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/pr ",1},
+    {L"使用物品+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/RUN UseItemByName(\"{}\")",2},
     {L"交互选择+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/script SelectGossipOption({})",2},
 
     {L"组合按键+", L"TYPE:3|KEYS_ID:",1}
