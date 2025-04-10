@@ -207,7 +207,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     mainHWnd = CreateWindowW(szWindowClass, szTitle,
         WS_OVERLAPPEDWINDOW | WS_TABSTOP,  // 确保支持键盘输入
-        CW_USEDEFAULT, CW_USEDEFAULT, 700, 500,
+        CW_USEDEFAULT, CW_USEDEFAULT, 800, 650,
         nullptr, nullptr, hInstance, nullptr);
 
 
@@ -264,7 +264,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         //输入框
         inputs1 = CreateWindowW(L"EDIT", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL,
-            200, 10, 250, 30, hWnd, (HMENU)(1003), hInst, NULL);
+            100, 10, 500, 40, hWnd, (HMENU)(1003), hInst, NULL);
 
 
 
@@ -277,15 +277,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // CreateWindowW(L"BUTTON", L"组合按键", WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
         //    10, 320, 80, 30, hWnd, (HMENU)1007, hInst, NULL);
 
+
+        int btn_editer = 0;
+
         for (int i = 0; i < buttons.size(); ++i) {
-            int x = 50 + (i % 4) * 160;  // 每行4个按钮
-            int y = 50 + (i / 4) * 40;    // 每4个按钮换一行
+         
+
+            if (buttons[i].name == L"---分割线---") {
+                btn_editer = (btn_editer / 4 + 1) * 4;
+                continue;
+            }
+
+            int x = 50 + (btn_editer % 4) * 160;  // 每行4个按钮
+            int y = 50 + (btn_editer / 4) * 40;    // 每4个按钮换一行
+
+
             HWND hButton = CreateWindowW(L"BUTTON", buttons[i].name.c_str(),
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
                 x, y, 150, 30,
                 hWnd, (HMENU)(1100 + i), ((LPCREATESTRUCT)lParam)->hInstance, NULL);
+
             commandMap[1100 + i] = &buttons[i];
+
+
+            
+            // 如果需要输入框
+            if (buttons[i].addContent > 0) {
+                btn_editer++;
+                //// 创建输入框，位置紧跟按钮
+                x = 50 + (btn_editer % 4) * 160;
+                y = 50 + (btn_editer / 4) * 40;
+                HWND hInput = CreateWindowW(L"EDIT", L"", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL,
+                    x, y, 150, 30, hWnd, (HMENU)(1300 + i), hInst, NULL);//+ID 200
+
+                ButtonInfoinputControlsEditListHWNDMap[1100 + i] = hInput;  // 将输入框句柄保存到列表中
+            
+            }
+
+
+            btn_editer++;
         }
+
+
          break;
 
 
@@ -319,16 +352,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         int wmId = LOWORD(wParam); 
         TCHAR buffer[256];
         std::string msg;
-        GetWindowText(inputs1, buffer, sizeof(buffer) / sizeof(TCHAR));
+      
 
         if (wmId >= 1100 && wmId <= 1100 + buttons.size()) {
             if (commandMap.find(wmId) != commandMap.end()) {
                 std::wstring  m = commandMap[wmId]->command;
                 if (m.length() > 0) {
+
                     if (commandMap[wmId]->addContent == 1 ) {
+                        GetWindowText((ButtonInfoinputControlsEditListHWNDMap[wmId]), buffer, sizeof(buffer) / sizeof(TCHAR));
                         m += buffer;
                     }
                     else if (commandMap[wmId]->addContent == 2) {
+                        GetWindowText((ButtonInfoinputControlsEditListHWNDMap[wmId]), buffer, sizeof(buffer) / sizeof(TCHAR));
                         size_t pos = m.find(L"{}");
                         if (pos != std::string::npos) {
                             m.replace(pos, 2, buffer);  // 替换 "{}" 为 buffer
@@ -418,39 +454,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_PAINT:
        
-        HDC hdc;
-        PAINTSTRUCT ps;
-        RECT rect;
+        //HDC hdc;
+        //PAINTSTRUCT ps;
+        //RECT rect;
 
-        // 获取设备上下文
-        hdc = BeginPaint(hWnd, &ps);
+        //// 获取设备上下文
+        //hdc = BeginPaint(hWnd, &ps);
 
-        // 获取窗口的大小
-        GetClientRect(hWnd, &rect);
+        //// 获取窗口的大小
+        //GetClientRect(hWnd, &rect);
 
 
-        // 根据isrun的值绘制圆圈
-        if (isTaskRunning)
-        {
-            // 绘制绿色圆圈
-            HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0)); // 绿色
-            SelectObject(hdc, greenBrush);
-            Ellipse(hdc, 540, 375, 560, 395);
+        //// 根据isrun的值绘制圆圈
+        //if (isTaskRunning)
+        //{
+        //    // 绘制绿色圆圈
+        //    HBRUSH greenBrush = CreateSolidBrush(RGB(0, 255, 0)); // 绿色
+        //    SelectObject(hdc, greenBrush);
+        //    Ellipse(hdc, 540, 375, 560, 395);
 
-            DeleteObject(greenBrush);
-        }
-        else
-        {
-            // 绘制红色圆圈
-            HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0)); // 红色
-            SelectObject(hdc, redBrush);
-            Ellipse(hdc, 540, 375, 560, 395);
+        //    DeleteObject(greenBrush);
+        //}
+        //else
+        //{
+        //    // 绘制红色圆圈
+        //    HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0)); // 红色
+        //    SelectObject(hdc, redBrush);
+        //    Ellipse(hdc, 540, 375, 560, 395);
 
-            DeleteObject(redBrush);
-        }
+        //    DeleteObject(redBrush);
+        //}
 
-        // 结束绘制
-        EndPaint(hWnd, &ps);
+        //// 结束绘制
+        //EndPaint(hWnd, &ps);
         return 0;
 
     case WM_DESTROY:

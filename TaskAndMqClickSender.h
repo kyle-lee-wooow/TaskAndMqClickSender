@@ -42,7 +42,7 @@ std::vector<ButtonInfo> buttons = {
     {L"右键点中间", L"TYPE:4|COMMAND:RIGHT_CLICK|POSITION:CENTER",0},
     //{L"接受组队", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/run local f=CreateFrame(\"Frame\") f:RegisterEvent(\"PARTY_INVITE_REQUEST\") f:SetScript(\"OnEvent\",function() AcceptGroup(); StaticPopup_Hide(\"PARTY_INVITE\") end)",0},
 
-    {L"---------", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:1",0},
+    {L"---分割线---", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:1",0},
 
     {L"选中按键+", L"TYPE:2|COMMAND:CHECK_CHECKBOX|CHECKBOX_ID:",1},
     {L"取消按键+", L"TYPE:2|COMMAND:UNCHECK_CHECKBOX|CHECKBOX_ID:",1},
@@ -52,13 +52,14 @@ std::vector<ButtonInfo> buttons = {
     {L"协助队友+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/协助 ",1},
     {L"升为队长+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/pr ",1},
     {L"使用物品+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/RUN UseItemByName(\"{}\")",2},
-    {L"交互选择+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/script SelectGossipOption({})",2},
+    {L"释放技能+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/RUN CastSpellByName(\"{}\")",2},
+    {L"交互选择+", L"TYPE:2|COMMAND:WOW_SAY|CONTENT:/RUN SelectGossipOption({})",2},
 
     {L"组合按键+", L"TYPE:3|KEYS_ID:",1}
 };
 std::map<int, const ButtonInfo*> commandMap;
 
-
+std::map<int, HWND> ButtonInfoinputControlsEditListHWNDMap;
 
 
 
